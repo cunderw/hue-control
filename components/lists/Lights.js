@@ -1,8 +1,16 @@
 import React from "react";
 import { SearchBar, List, ListItem } from "react-native-elements";
-import { Text, View, AsyncStorage } from "react-native";
-const LIGHTS_URL =
-  "http://192.168.85.93/api/Za56aBeEzoWfSkS38UcHHKPqswjki1m1fGoS5v3q/lights";
+import {
+  Text,
+  View,
+  AsyncStorage,
+  Button,
+  ScrollView,
+  Image
+} from "react-native";
+import { StackNavigator } from "react-navigation";
+import { getLights } from "../data/LightData";
+
 const lights = [];
 
 export default class LightsList extends React.Component {
@@ -18,8 +26,7 @@ export default class LightsList extends React.Component {
 
   componentDidMount() {
     this.setState({ isLoading: true });
-
-    return fetch(LIGHTS_URL)
+    return getLights()
       .then(response => response.json())
       .then(responseJson => {
         this.setState(
@@ -45,7 +52,6 @@ export default class LightsList extends React.Component {
     Object.keys(data).forEach(function(id, index) {
       let light = data[id];
       lights[index] = light;
-      //console.log("Index:" + index + " - " + lights[index].name);
     });
     return (
       <List
@@ -61,7 +67,7 @@ export default class LightsList extends React.Component {
             }}
             key={i}
             title={l.name}
-            onPress={() => this.props.navigate("Details", { lightData: l })}
+            onPress={() => this.props.navigate("Light", { lightData: l })}
           />
         ))}
       </List>

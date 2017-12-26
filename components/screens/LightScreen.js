@@ -1,14 +1,22 @@
 import React from "react";
-import { View, Text, Button, ScrollView, Image } from "react-native";
+import { SearchBar, List, ListItem } from "react-native-elements";
+import {
+  Text,
+  View,
+  AsyncStorage,
+  Button,
+  ScrollView,
+  Image
+} from "react-native";
 import { StackNavigator } from "react-navigation";
-import styles from "./styles/style";
 
-export default class DetailsScreen extends React.Component {
+export default class LightScreen extends React.Component {
   static navigationOptions = ({ navigation }) => ({
     title: navigation.state.params.lightData.name
   });
   render() {
     const { params } = this.props.navigation.state;
+    console.log(params.lightData);
     return (
       <View style={{ flex: 1 }}>
         <Image
@@ -19,7 +27,7 @@ export default class DetailsScreen extends React.Component {
             flex: 1
           }}
         />
-        <Button title={"BUTTON"} onPress={() => toggleLight(1)} />
+        <Button title={"MARSHALL"} onPress={() => toggleLight(1)} />
       </View>
     );
   }
