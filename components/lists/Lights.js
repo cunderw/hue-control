@@ -7,7 +7,13 @@ import {
   View,
   Button
 } from "react-native";
-import { getLights, getLight, toggleLight } from "../data/LightData";
+import {
+  getLights,
+  getLight,
+  toggleLight,
+  getGroups,
+  getGroupLights
+} from "../data/LightData";
 
 export default class LightsList extends React.Component {
   constructor(props) {
@@ -137,6 +143,100 @@ class Light extends React.Component {
   }
 }
 
+export class GroupsList extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      groups: {},
+      isLoading: true,
+      error: null
+    };
+  }
+  componentWillMount() {}
+
+  componentDidMount() {
+    this.setState({ isLoading: true });
+    return getGroups()
+      .then(groups => {
+        this.setState(
+          {
+            groups: groups,
+            isLoading: false
+          },
+          function() {
+            // do something with new state
+          }
+        );
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }
+
+  shouldComponentUpdate() {
+    return true;
+  }
+
+  render() {
+    const { groups, isLoading } = this.state;
+    if (this.state.isLoading) {
+      return <Text>Loading...</Text>;
+    }
+
+    return (
+      <View style={styles.container}>
+        <FlatList
+          data={this.state.groups}
+          renderItem={({ item }) => <Group group={item} />}
+        />
+      </View>
+    );
+  }
+}
+
+class Group extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isLoading: true,
+      error: null
+    };
+  }
+  componentDidMount() {
+    this.setState({ isLoading: true });
+    return getGroupLights(this.props.group.id)
+      .then(groupLights => {
+        this.setState(
+          {
+            groupLights: groupLights,
+            isLoading: false
+          },
+          function() {
+            // do something with new state
+          }
+        );
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }
+  render() {
+    const { group, isLoading } = this.state;
+    if (this.state.isLoading) {
+      return <Text>Loading...</Text>;
+    }
+    return (
+      <View style={Group.Light}>
+        <Text style={styles.GroupText}>{this.props.group.name}</Text>
+        <FlatList
+          data={this.state.groupLights}
+          renderItem={({ item }) => <Light id={item.id} />}
+        />
+      </View>
+    );
+  }
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -146,5 +246,10 @@ const styles = StyleSheet.create({
     padding: 10,
     height: 60
   },
+  Group: {
+    padding: 10,
+    height: 60
+  },
+  GroupText: {},
   LightText: {}
 });

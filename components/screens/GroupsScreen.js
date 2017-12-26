@@ -1,7 +1,7 @@
 import React from "react";
 import { View, ScrollView } from "react-native";
 import { DrawerNavigator } from "react-navigation";
-import LightsList from "../lists/Lights";
+import { GroupsList } from "../lists/Lights";
 
 export default class GroupsScreen extends React.Component {
   render() {
@@ -9,7 +9,7 @@ export default class GroupsScreen extends React.Component {
     return (
       <View>
         <ScrollView>
-          <LightsList navigate={navigate} />
+          <GroupsList />
         </ScrollView>
       </View>
     );
