@@ -7,14 +7,13 @@ import {
   View,
   Button
 } from "react-native";
-import { StackNavigator } from "react-navigation";
-import { getLights, toggleLight } from "../data/LightData";
+import { getLights, getLight, toggleLight } from "../data/LightData";
 
 export default class LightsList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: {},
+      lights: {},
       isLoading: true,
       error: null
     };
@@ -24,11 +23,10 @@ export default class LightsList extends React.Component {
   componentDidMount() {
     this.setState({ isLoading: true });
     return getLights()
-      .then(response => response.json())
-      .then(response => {
+      .then(lights => {
         this.setState(
           {
-            data: this.buildLights(response),
+            lights: lights,
             isLoading: false
           },
           function() {
@@ -41,26 +39,12 @@ export default class LightsList extends React.Component {
       });
   }
 
-  buildLights(json) {
-    let lights = [];
-    Object.keys(json).forEach(function(id, index) {
-      let light = json[id];
-      lights[index] = light;
-      lights[index].key = light.name;
-      lights[index].id = id;
-    });
-    return lights;
-  }
-
   shouldComponentUpdate() {
     return true;
   }
-  onPressLightToggle(id, currState) {
-    toggleLight(id, currState);
-    this.setState(this.state);
-  }
+
   render() {
-    const { data, isLoading } = this.state;
+    const { lights, isLoading } = this.state;
     if (this.state.isLoading) {
       return <Text>Loading...</Text>;
     }
@@ -68,20 +52,85 @@ export default class LightsList extends React.Component {
     return (
       <View style={styles.container}>
         <FlatList
-          data={this.state.data}
-          renderItem={({ item }) => (
-            <View style={styles.Light}>
-              <Text style={styles.LightText}>{item.key}</Text>
-              <Button
-                onPress={() => {
-                  this.onPressLightToggle(item.id, item.state.on);
-                }}
-                title={item.state.on ? "ON" : "OFF"}
-                color="#841584"
-                accessibilityLabel="Learn more about this purple button"
-              />
-            </View>
-          )}
+          data={this.state.lights}
+          renderItem={({ item }) => <Light id={item.id} />}
+        />
+      </View>
+    );
+  }
+}
+
+class Light extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      light: {},
+      isLoading: true,
+      error: null
+    };
+  }
+
+  onPressLightToggle() {
+    this.setState({ isLoading: true });
+    return toggleLight(this.props.id, this.state.light.state.on)
+      .then(light => {
+        this.setState(
+          {
+            light: light,
+            isLoading: false
+          },
+          function() {
+            // do something with new state
+          }
+        );
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }
+  componentDidMount() {
+    this.setState({ isLoading: true });
+    return getLight(this.props.id)
+      .then(light => {
+        this.setState(
+          {
+            light: light,
+            isLoading: false
+          },
+          function() {
+            // do something with new state
+          }
+        );
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }
+
+  shouldComponentUpdate() {
+    return true;
+  }
+
+  render() {
+    const { light, isLoading } = this.state;
+    if (this.state.isLoading) {
+      return (
+        <View style={styles.Light}>
+          <Text style={styles.LightText}>light.name</Text>
+          <Button onPress={() => {}} title="Loading..." color="#841584" />
+        </View>
+      );
+    }
+    return (
+      <View style={styles.Light}>
+        <Text style={styles.LightText}>{light.name}</Text>
+        <Button
+          onPress={() => {
+            this.onPressLightToggle();
+          }}
+          title={light.state.on ? "ON" : "OFF"}
+          color="#841584"
+          accessibilityLabel="Learn more about this purple button"
         />
       </View>
     );
