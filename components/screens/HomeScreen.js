@@ -1,8 +1,6 @@
 import React from "react";
 import { View, Text, Button, ScrollView } from "react-native";
 import { StackNavigator } from "react-navigation";
-import { SearchBar, List, ListItem } from "react-native-elements";
-import styles from "../styles/style";
 import LightsList from "../lists/Lights";
 
 export default class HomeScreen extends React.Component {
@@ -12,7 +10,7 @@ export default class HomeScreen extends React.Component {
   render() {
     const { navigate } = this.props.navigation;
     return (
-      <View style={styles.homeScreen}>
+      <View>
         <ScrollView>
           <LightsList navigate={navigate} />
         </ScrollView>
